@@ -14,7 +14,7 @@
         }
 
         .bg {
-            background-image: url('/css/img/VERDU.jpg'); /* ← Mismo estilo que el login */
+            background-image: url('/css/img/VERDU.jpg');
             background-position: center center;
             background-size: cover;
         }
@@ -25,41 +25,32 @@
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
-
-            .form-wrapper label {
-                color: #333;
-            }
-
-            .form-wrapper input,
-            .form-wrapper select {
-                background-color: #f9f9f9;
-                color: #000;
-                border: 1px solid #ccc;
-            }
-
-                .form-wrapper input::placeholder {
-                    color: #999;
-                }
-
-            .form-wrapper a {
-                color: #0d6efd;
-            }
     </style>
 </head>
 <body>
     <div class="container mt-5 shadow form-wrapper">
         <div class="row align-items-stretch">
-            <!-- Lado izquierdo con imagen -->
+            <!-- Imagen -->
             <div class="col bg d-none d-lg-block col-md-5 col-lg-5 col-xl-6"></div>
 
-            <!-- Lado derecho con formulario -->
+            <!-- Formulario -->
             <div class="col p-5">
                 <h2 class="fw-bold text-center py-4">Regístrate</h2>
-                <form asp-action="Registrase" asp-controller="Datos">
+
+                <!-- Mensajes -->
+                @if (TempData["Success"] != null)
+                {
+                    <div class="alert alert-success text-center">@TempData["Success"]</div>
+                }
+                @if (ViewData["Error"] != null)
+                {
+                    <div class="alert alert-danger text-center">@ViewData["Error"]</div>
+                }
+
+                <form asp-action="Registrase" asp-controller="Datos" method="post">
                     <div class="mb-3">
-                        <label asp-for="TipoC" class="form-label">Tipo De cedula</label>
+                        <label asp-for="TipoC" class="form-label">Tipo de Cédula</label>
                         <select asp-for="TipoC" class="form-control" asp-items="Html.GetEnumSelectList<TipoC>()"></select>
-                        <span asp-validation-for="TipoC" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Identificación</label>
@@ -80,7 +71,6 @@
                     <div class="mb-3">
                         <label asp-for="Rol" class="form-label">Rol</label>
                         <select asp-for="Rol" class="form-control" asp-items="Html.GetEnumSelectList<Rol>()"></select>
-                        <span asp-validation-for="Rol" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Correo</label>
@@ -97,7 +87,6 @@
                     <div class="mb-3">
                         <label asp-for="Tiposexo" class="form-label">Sexo</label>
                         <select asp-for="Tiposexo" class="form-control" asp-items="Html.GetEnumSelectList<Tiposexo>()"></select>
-                        <span asp-validation-for="Tiposexo" class="text-danger"></span>
                     </div>
                     <div class="d-grid">
                         <button type="submit" class="btn btn-primary">Registrarse</button>
@@ -109,7 +98,6 @@
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

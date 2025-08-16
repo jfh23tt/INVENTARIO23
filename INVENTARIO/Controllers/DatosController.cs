@@ -17,39 +17,50 @@ namespace INVENTARIO.Controllers
 
 
         // GET: DatosController
-        public IActionResult Registrarse(Registrarse usuario)
+        public IActionResult Registrarse()
         {
+            if (TempData["ErrorRegistro"] != null)
+                ViewData["Error"] = TempData["ErrorRegistro"];
+
+            if (TempData["MensajeExito"] != null)
+                ViewData["Success"] = TempData["MensajeExito"];
+
             return View("~/Views/Registrarse/Registrase.cshtml");
         }
 
-        public IActionResult Registrase(Registrarse usuario)
+        public async Task<IActionResult> Registrase(Registrarse usuario)
         {
-            // Validar modelo
             if (!ModelState.IsValid)
             {
-                return View("~/Views/Registrarse/Registrase.cshtml", usuario);
+                TempData["ErrorRegistro"] = "Datos inválidos, revisa el formulario.";
+                return RedirectToAction("Registrarse");
             }
 
-            // Validar que el usuario no exista
-            var usuarioExistente = repositorioUsuario.RegistroUsuario(usuario);
-            if (usuarioExistente != null)
+            try
             {
-                ModelState.AddModelError("", "El usuario ya existe.");
-                return View("~/Views/Registrarse/Registrase.cshtml", usuario);
+                // Encriptar la contraseña antes de guardar
+                Encriptar encriptar = new Encriptar();
+                usuario.Contraseña = encriptar.Encrypt(usuario.Contraseña);
+
+                bool creado = await repositorioUsuario.RegistroUsuario(usuario);
+
+                if (creado)
+                {
+                    TempData["MensajeExito"] = "Cuenta creada correctamente. Ahora puedes iniciar sesión.";
+                    return RedirectToAction("Logins", "Logins");
+                }
+                else
+                {
+                    TempData["ErrorRegistro"] = "No se pudo registrar el usuario (puede que el correo ya exista).";
+                    return RedirectToAction("Registrarse");
+                }
             }
-
-            // Encriptar contraseña
-            Encriptar encriptar = new Encriptar();
-            usuario.Contraseña = encriptar.Encrypt(usuario.Contraseña);
-
-            // Guardar usuario
-            repositorioUsuario.RegistroUsuario(usuario);
-
-            // Mensaje de éxito
-            TempData["MensajeExito"] = "Cuenta creada exitosamente.";
-            return RedirectToAction("Menu", "Home");
+            catch (Exception ex)
+            {
+                TempData["ErrorRegistro"] = $"Ocurrió un error: {ex.Message}";
+                return RedirectToAction("Registrarse");
+            }
         }
-
 
         // GET: DatosController/Details/5
         public ActionResult Details(int id)

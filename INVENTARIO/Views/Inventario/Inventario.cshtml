@@ -67,7 +67,7 @@
                                         data-fechaingreso="@item.FechaIngreso.ToString("yyyy-MM-ddTHH:mm")">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
-                                <form asp-action="Eliminar" asp-controller="Inventario" method="post" style="display:inline;">
+                                <form asp-action="EliminarProducto" asp-controller="Inventario" method="post" style="display:inline;">
                                     <input type="hidden" name="id" value="@item.Id" />
                                     <button type="submit" class="btn btn-danger btn-sm">
                                         <i class="bi bi-trash"></i>
@@ -163,7 +163,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-eliminar" data-bs-dismiss="modal">eliminar</button>
                 </div>
             </form>
         </div>

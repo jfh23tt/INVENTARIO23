@@ -1,21 +1,57 @@
-﻿using System.Diagnostics;
-using INVENTARIO.Models;
+﻿using INVENTARIO.Models;
+using INVENTARIO.Servicios;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace INVENTARIO.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IRepositorioUsuario repositorioUsuario;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IRepositorioUsuario repositorioUsuario)
         {
-            _logger = logger;
+            this.repositorioUsuario = repositorioUsuario;
+        }
+
+        public async Task<IActionResult> InformacionPersonal()
+        {
+            int? usuarioId = HttpContext.Session.GetInt32("UsuarioId");
+
+            if (usuarioId == null)
+            {
+                // Redirigir al login si no hay sesión
+                TempData["ErrorLogin"] = "Debe iniciar sesión para acceder a esta sección.";
+                return RedirectToAction("Login", "Logins");
+            }
+
+            var usuario = await repositorioUsuario.ObtenerPorId(usuarioId.Value);
+
+            if (usuario == null)
+            {
+                return View("Error", new ErrorViewModel
+                {
+                    message = "Usuario no encontrado",
+                    RequestId = HttpContext.TraceIdentifier
+                });
+            }
+
+            return View("~/Views/Configuracion/InformacionPersonal.cshtml", usuario);
+        }
+
+        public IActionResult Seguridad()
+        {
+            return View("~/Views/Configuracion/Seguridad.cshtml");
+        }
+
+        public IActionResult Configuracion()
+        {
+            return View("~/Views/Configuracion/Configuracion.cshtml");
         }
 
         public IActionResult Menu()
         {
-            return View();
+            return View("~/Views/Home/Menu.cshtml");
         }
 
         public IActionResult Privacy()
@@ -30,3 +66,4 @@ namespace INVENTARIO.Controllers
         }
     }
 }
+

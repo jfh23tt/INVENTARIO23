@@ -15,50 +15,95 @@ namespace INVENTARIO.Controllers
             this.repositorioUsuario = repositorioUsuario;
         }
         // GET: LoginsController
-        public IActionResult Logins(LoginsModel GuardarL)
+        // GET: Logins
+        [HttpGet]
+        public IActionResult Logins(LoginsModel model)
         {
-            return View(GuardarL);
+            // Mostrar mensaje si viene desde TempData
+            if (TempData["Success"] != null)
+                ViewData["Success"] = TempData["Success"];
+
+            if (TempData["ErrorLogin"] != null)
+                ViewData["Error"] = TempData["ErrorLogin"];
+
+            return View(model);
         }
+
         public IActionResult CerrarSesion()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Logins", "Logins");
+            TempData["Success"] = "Sesión cerrada correctamente";
+            return RedirectToAction("Logins");
         }
 
         [HttpPost]
-        public async Task<IActionResult> inicio(LoginsModel informacion)
+        //public async Task<IActionResult> inicio(LoginsModel informacion)
+        //{
+        //    ErrorViewModel errorViewModel = new ErrorViewModel();
+
+        //    try
+        //    {
+        //        if (!ModelState.IsValid)
+        //        {
+        //            return RedirectToAction("Logins", "Logins");
+        //        }
+
+        //        Encriptar clave = new Encriptar();
+        //        informacion.contraseña = clave.Encrypt(informacion.contraseña);
+
+        //        var usuario = await repositorioUsuario.ValidarUsuario(informacion);
+
+        //        if (usuario != null)
+        //        {
+        //            // ✅ Aquí guardas el ID del usuario en la sesión
+        //            HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
+
+        //            // Luego lo rediriges a la vista deseada
+        //            return View("~/Views/Home/Menu.cshtml");
+        //        }
+
+        //        TempData["ErrorLogin"] = "Correo o contraseña incorrecta";
+        //        return RedirectToAction("Logins", "Logins");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        errorViewModel.RequestId = ex.HResult.ToString();
+        //        errorViewModel.message = ex.Message;
+        //        return View("Error", errorViewModel);
+        //    }
+        //}
+        public async Task<IActionResult> Inicio(LoginsModel informacion)
         {
-            ErrorViewModel errorViewModel = new ErrorViewModel();
+            if (!ModelState.IsValid)
+            {
+                TempData["ErrorLogin"] = "Datos inválidos";
+                return RedirectToAction("Logins");
+            }
 
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return RedirectToAction("Logins", "Logins");
-                }
-
-                Encriptar clave = new Encriptar();
-                informacion.contraseña = clave.Encrypt(informacion.contraseña);
-
-                var usuario = await repositorioUsuario.ValidarUsuario(informacion);
+                var usuario = await repositorioUsuario.ValidarUsuario(
+                    informacion.correo,
+                    informacion.contraseña // se envía sin encriptar
+                );
 
                 if (usuario != null)
                 {
-                    // ✅ Aquí guardas el ID del usuario en la sesión
                     HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
-
-                    // Luego lo rediriges a la vista deseada
-                    return View("~/Views/Home/Menu.cshtml");
+                    TempData["Success"] = $"¡Bienvenido, {usuario.Nombre}!";
+                    return RedirectToAction("Menu", "Home");
                 }
 
                 TempData["ErrorLogin"] = "Correo o contraseña incorrecta";
-                return RedirectToAction("Logins", "Logins");
+                return RedirectToAction("Logins");
             }
             catch (Exception ex)
             {
-                errorViewModel.RequestId = ex.HResult.ToString();
-                errorViewModel.message = ex.Message;
-                return View("Error", errorViewModel);
+                return View("Error", new ErrorViewModel
+                {
+                    RequestId = ex.HResult.ToString(),
+                    message = ex.Message
+                });
             }
         }
 

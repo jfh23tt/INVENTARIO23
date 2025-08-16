@@ -120,7 +120,7 @@ namespace INVENTARIO.Controllers
         public async Task<IActionResult> ConfirmarEliminar(int id)
         {
             await repositorioInventario.Eliminar(id);
-            return RedirectToAction("Index");
+            return RedirectToAction("Inventario");
         }
     }
 }

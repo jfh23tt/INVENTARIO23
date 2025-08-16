@@ -1,5 +1,7 @@
 ﻿using INVENTARIO.Models;
 using INVENTARIO.Servicios;
+using iText.IO.Font.Constants;
+using iText.Kernel.Font;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
@@ -24,52 +26,55 @@ namespace INVENTARIO.Controllers
 
         public IActionResult pdfInventario()
         {
-            // Generar el PDF
-            MemoryStream stream = new MemoryStream();
-            PdfWriter writer = new PdfWriter(stream);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
-
-            // Título del documento
-            document.Add(new Paragraph("Listado de Inventario")
-                .SetFontSize(18)
-                .SetBold()
-                .SetTextAlignment(TextAlignment.CENTER));
-
-            // Tabla con encabezados
-            Table table = new Table(6, true); // 6 columnas
-
-            table.AddHeaderCell("Nombre");
-            table.AddHeaderCell("Categoría");
-            table.AddHeaderCell("Cantidad");
-            table.AddHeaderCell("Precio");
-            table.AddHeaderCell("Proveedor");
-            table.AddHeaderCell("Fecha Ingreso");
-
-            // Llenar la tabla con datos
-            InventarioModel pdfinventario = new InventarioModel();
-            var inventario = repositoriopdf.Invetariopdf(pdfinventario);
-
-            foreach (var item in inventario)
+            using (MemoryStream stream = new MemoryStream())
             {
-                table.AddCell(item.Nombre);
-                table.AddCell(item.Categoria);
-                table.AddCell(item.Cantidad.ToString());
-                table.AddCell(item.Precio.ToString("C")); // formato moneda
-                table.AddCell(item.Proveedor);
-                table.AddCell(item.FechaIngreso.ToString("dd/MM/yyyy"));
+                PdfWriter writer = new PdfWriter(stream, new WriterProperties().SetCompressionLevel(9));
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
+
+                // Fuente en negrita
+                var boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+
+                // Título del documento
+                document.Add(new Paragraph("Listado de Inventario")
+                    .SetFontSize(18)
+                    .SetFont(boldFont)
+                    .SetTextAlignment(TextAlignment.CENTER));
+
+                // Tabla con 6 columnas
+                Table table = new Table(6);
+
+                // Encabezados en negrita
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Nombre").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Categoría").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Cantidad").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Precio").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Proveedor").SetFont(boldFont)));
+                table.AddHeaderCell(new Cell().Add(new Paragraph("Fecha Ingreso").SetFont(boldFont)));
+
+                // Llenar la tabla con datos
+                InventarioModel pdfinventario = new InventarioModel();
+                var inventario = repositoriopdf.Invetariopdf(pdfinventario);
+
+                foreach (var item in inventario)
+                {
+                    table.AddCell(item.Nombre ?? "");
+                    table.AddCell(item.Categoria ?? "");
+                    table.AddCell(item.Cantidad.ToString());
+                    table.AddCell(item.Precio.ToString("C"));
+                    table.AddCell(item.Proveedor ?? "");
+                    table.AddCell(item.FechaIngreso.ToString("dd/MM/yyyy"));
+                }
+
+                // Agregar tabla al documento
+                document.Add(table);
+
+                document.Close();
+
+                byte[] pdfBytes = stream.ToArray();
+                return File(pdfBytes, "application/pdf", "ListadoInventario.pdf");
             }
-
-            // Agregar tabla al documento y cerrar
-            document.Add(table);
-            document.Close();
-
-            // Devolver el archivo como PDF
-            byte[] pdfBytes = stream.ToArray();
-            Response.Headers.Add("Content-Disposition", "inline; filename=ListadoInventario.pdf");
-            return File(pdfBytes, "application/pdf");
         }
-
         // GET: PDFController/Details/5
         public ActionResult Details(int id)
         {
