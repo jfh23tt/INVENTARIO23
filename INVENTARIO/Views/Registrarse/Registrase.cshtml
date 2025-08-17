@@ -47,7 +47,7 @@
                     <div class="alert alert-danger text-center">@ViewData["Error"]</div>
                 }
 
-                <form asp-action="Registrase" asp-controller="Datos" method="post">
+                <form asp-action="Registrase" asp-controller="Datos" method="post" id="formRegistro">
                     <div class="mb-3">
                         <label asp-for="TipoC" class="form-label">Tipo de Cédula</label>
                         <select asp-for="TipoC" class="form-control" asp-items="Html.GetEnumSelectList<TipoC>()"></select>
@@ -82,7 +82,8 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Fecha de Nacimiento</label>
-                        <input asp-for="Fechadenacimiento" type="date" class="form-control" />
+                        <input asp-for="Fechadenacimiento" type="date" class="form-control" id="fechaNacimiento" />
+                        <span asp-validation-for="Fechadenacimiento" class="text-danger"></span>
                     </div>
                     <div class="mb-3">
                         <label asp-for="Tiposexo" class="form-label">Sexo</label>
@@ -98,6 +99,36 @@
             </div>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fechaInput = document.getElementById("fechaNacimiento");
+
+            // 📌 No permitir fechas futuras
+            const hoy = new Date().toISOString().split("T")[0];
+            fechaInput.setAttribute("max", hoy);
+
+            document.getElementById("formRegistro").addEventListener("submit", function (e) {
+                const valor = new Date(fechaInput.value);
+                const hoy = new Date();
+
+                if (!fechaInput.value) return; // si está vacío, deja que actúe Required
+
+                // Calcular edad
+                let edad = hoy.getFullYear() - valor.getFullYear();
+                const m = hoy.getMonth() - valor.getMonth();
+                if (m < 0 || (m === 0 && hoy.getDate() < valor.getDate())) {
+                    edad--;
+                }
+
+                if (edad < 18) {
+                    e.preventDefault();
+                    alert("Debe tener al menos 18 años.");
+                    fechaInput.focus();
+                }
+            });
+        });
+    </script>
 </body>
 </html>

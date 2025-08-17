@@ -1,4 +1,5 @@
 ﻿using INVENTARIO.Models;
+using INVENTARIO.Repositorio;
 using INVENTARIO.Servicios;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
@@ -8,11 +9,25 @@ namespace INVENTARIO.Controllers
     public class HomeController : Controller
     {
         private readonly IRepositorioUsuario repositorioUsuario;
-
-        public HomeController(IRepositorioUsuario repositorioUsuario)
+        private readonly IRepositorioProducto repositorioProducto;
+        public HomeController(IRepositorioUsuario repositorioUsuario, IRepositorioProducto repositorioProducto)
         {
             this.repositorioUsuario = repositorioUsuario;
+            this.repositorioProducto = repositorioProducto;
         }
+        public IActionResult Entrada()
+        {
+            var productos = repositorioProducto.ListarProductos();
+
+            if (productos == null)
+            {
+                productos = new List<ProductoModel>();
+            }
+
+            return View(productos);
+        }
+
+
 
         public async Task<IActionResult> InformacionPersonal()
         {

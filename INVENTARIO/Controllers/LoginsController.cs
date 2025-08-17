@@ -91,8 +91,14 @@ namespace INVENTARIO.Controllers
                 {
                     HttpContext.Session.SetInt32("UsuarioId", usuario.Id);
                     TempData["Success"] = $"¡Bienvenido, {usuario.Nombre}!";
-                    return RedirectToAction("Menu", "Home");
+
+                    // ✅ Guardar el nombre y el rol como string
+                    TempData["NombreUsuario"] = usuario.Nombre;
+                    TempData["RolUsuario"] = usuario.Rol.ToString();
+
+                    return RedirectToAction("Entrada", "Home");
                 }
+
 
                 TempData["ErrorLogin"] = "Correo o contraseña incorrecta";
                 return RedirectToAction("Logins");
@@ -106,6 +112,7 @@ namespace INVENTARIO.Controllers
                 });
             }
         }
+
 
 
 

@@ -1,3 +1,4 @@
+using INVENTARIO.Models;
 using INVENTARIO.Repositorio;
 using INVENTARIO.Servicios;
 
@@ -9,6 +10,14 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepositorioUsuario, RepositorioUsuario>();
 builder.Services.AddTransient<IRepositorioInventario, RepositorioInventario>();
 builder.Services.AddTransient <Irepositoriopdf, Repositoriopdf>();
+
+builder.Services.AddTransient<IRepositorioProducto, RepositorioProducto>();
+//builder.Services.AddTransient<IRepositorioContacto, RepositorioContactano>();
+builder.Services.AddTransient<ICarritoServicio, carritoServicio>();
+builder.Services.AddTransient<productoSelecionados>();
+builder.Services.AddTransient<IRepositorioProveedor, RepositorioProveedor>();
+//builder.Services.AddTransient<IRepositorioConsulta, ReposirorioConsulta>();
+
 
 
 builder.Services.AddHttpContextAccessor();//agrega el acceso a Http context

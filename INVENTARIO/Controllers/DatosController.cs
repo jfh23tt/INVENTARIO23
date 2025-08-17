@@ -38,6 +38,9 @@ namespace INVENTARIO.Controllers
 
             try
             {
+                // 🔒 Asignar fecha de creación automáticamente
+                usuario.FechaCreacion = DateTime.Now;
+
                 // Encriptar la contraseña antes de guardar
                 Encriptar encriptar = new Encriptar();
                 usuario.Contraseña = encriptar.Encrypt(usuario.Contraseña);
@@ -61,6 +64,7 @@ namespace INVENTARIO.Controllers
                 return RedirectToAction("Registrarse");
             }
         }
+
 
         // GET: DatosController/Details/5
         public ActionResult Details(int id)

@@ -1,0 +1,151 @@
+﻿@model ProveedoresModel
+@{
+    Layout = null;
+    ViewData["TITLE"] = "HOME PAGE";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registro de Compras</title>
+    <link rel="stylesheet" type="text/css" href="~/css/site.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Compras</h1>
+        <form asp-action="RegistrarCompra" method="post">
+            <div class="mb-3">
+                <label for="Fecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" name="Fecha" required />
+            </div>
+            <div class="mb-3">
+                <label for="Codigo" class="form-label">Código</label>
+                <input type="text"  class="form-control" id="codigoProducto" required />
+                <button type="button" class="btn btn-primary" onclick="agregarProducto()">Agregar Producto</button>
+            </div>
+            <div class="mb-3">
+                <label for="Proveedor" class="form-label">Proveedor</label>
+                <input type="text"  class="form-control" name="Proveedor" required />
+                <button type="button" class="btn btn-primary btnna " data-bs-toggle="modal" onclick="agregarProveedor()" data-bs-target="#exampleModal">
+                    Buscar
+                </button>
+
+            </div>
+
+            <div class="mb-3">
+                <label for="Items" class="form-label">Productos</label>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID Producto</th>
+                            <th>Nombre</th>
+                            <th>Cantidad</th>
+                            <th>Valor por Unidad</th>
+                            <th>Subtotal</th>
+                            <th>Eliminar</th>
+                        </tr>
+                    </thead>
+        </form>
+        <tbody id="productosTable">
+            <tr>
+                <td><input type="text" class="form-control" name="ProductoId[]" /></td>
+                <td><input type="text" class="form-control" name="Nombre[]" /></td>
+                <td><input type="number" class="form-control" min="0" name="Cantidad[]" onkeydown="calcularSubtotal(event, this)" /></td>
+                <td><input type="number" class="form-control" name="valorPorUnidad[]" /></td>
+                <td><input type="number" class="form-control" name="Subtotal[]" readonly /></td>
+                <td>
+                    <button type="button" class="btn btn-danger " onclick="eliminarFila(this)">Eliminar</button>
+                </td>
+            </tr>
+        </tbody>
+        </table>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Registrar Compra</button>
+    <form asp-action="Menu" asp-controller="Home" method="post">
+    <button type="submit" asp-action="Menu" asp-controller="Home" class="btn btn-primary">volver</button>
+    </form>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.querySelector('.toggler-btn').addEventListener('click', function () {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+    </script>
+    <script>
+        
+                function agregarProveedor("click") {
+                    var codigo = $("#codigoProducto").val();
+                    $.ajax({
+                        url: '/Producto/detalleproducto',
+                        type: 'GET',
+                        data : { id: Codigo },
+                        success: function (proveedor) {
+                            var nuevaFila = `
+                                                        <tr>
+                                                            <td><input type="text" class="form-control" name="Identificacion[]" value="${proveedor.Identificacion}" readonly /></td>
+                                                            <td><input type="text" class="form-control" name="Nombre[]" value="${proveedor.Nombre}" readonly /></td>
+                                                            <td><input type="text" class="form-control" name="Empresa[]" value="${proveedor.Empresa}" readonly /></td>
+                                                            <td><input type="text" class="form-control" name="Correo[]" value="${proveedor.Correo}" readonly /></td>
+                                                            <td><input type="text" class="form-control" name="Direccion[]" value="${proveedor.Direccion}" readonly /></td>
+                                                        </tr>
+                                                    `;
+                            $("#Proveedortable").append(nuevaFila);
+                            error: function () {
+                                alert("Producto no encontrado.");
+                            }
+                        });
+                }
+            
+    </script>
+    <script>
+
+
+        function agregarProducto() {
+            var codigo = $("#codigoProducto").val();
+            $.ajax({
+                url: '/Carrito/ObtenerProductoPorCodigo',
+                type: 'GET',
+                data: { codigo: codigo },
+                success: function (producto) {
+                    var nuevaFila = `
+                                                <tr>
+                                                    <td><input type="text" class="form-control" name="ProductoId[]" value="${producto.codigo}" readonly /></td>
+                                                    <td><input type="text" class="form-control"   name="Nombre[]" value="${producto.nombre}" readonly /></td>
+                                                    <td><input type="number" class="form-control" name="Cantidad[]" onkeydown="calcularSubtotal(event, this)" /></td>
+                                                    <td><input type="number" class="form-control" name="Uni[]" value="${producto.precio}" readonly /></td>
+                                                    <td><input type="number" class="form-control" name="Subtotal[]" readonly /></td>
+                                                    <td><button type="button" class="btn btn-danger" onclick="eliminarFila(this)">Eliminar</button></td>
+                                                </tr>
+                                            `;
+                    $("#productosTable").append(nuevaFila);
+                },
+                error: function () {
+                    alert("Producto no encontrado.");
+                }
+            });
+        }
+
+        function calcularSubtotal(event, input) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                var row = $(input).closest("tr");
+                var cantidad = parseFloat(row.find("input[name='Cantidad[]']").val());
+                var valorPorUnidad = parseFloat(row.find("input[name='Uni[]']").val());
+                var subtotal = (valorPorUnidad * cantidad).toFixed(2);
+                row.find("input[name='Subtotal[]']").val(subtotal);
+            }
+        }
+
+        function eliminarFila(button) {
+            var row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+    </script>
+   
+</body>
+</html>
+

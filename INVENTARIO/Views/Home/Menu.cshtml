@@ -1,196 +1,91 @@
-﻿@{
-    ViewBag.Title = "Panel Principal - MiTienda";
-    var nombreUsuario = TempData["NombreUsuario"] ?? "Usuario";
-    var mensajeExito = TempData["MensajeExito"];
-    var mensajeError = TempData["MensajeError"];
-}
-
+﻿
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>@ViewBag.Title</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-        }
-
-        .navbar {
-            background-color: #1f1f1f;
-        }
-
-        .navbar-brand, .nav-link, .dropdown-item {
-            color: #ffffff !important;
-        }
-
-            .nav-link.active {
-                color: #0d6efd !important;
-            }
-
-        .btn-outline-success {
-            border-color: #0d6efd;
-            color: #0d6efd;
-        }
-
-            .btn-outline-success:hover {
-                background-color: #0d6efd;
-                color: #ffffff;
-            }
-
-        .dropdown-menu {
-            background-color: #1f1f1f;
-        }
-
-        .dropdown-item:hover {
-            background-color: #343a40;
-        }
-
-        .carousel-caption {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 1rem;
-            border-radius: 10px;
-        }
-
-        .carousel-item img {
-            object-fit: cover;
-            height: 400px;
-            width: 100%;
-            filter: brightness(0.6);
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @{
+        <title>Document</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        Layout = null;
+    }
 </head>
 <body>
-
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Menu">MiTienda</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuTienda">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Navbar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-
-            <div class="collapse navbar-collapse" id="menuTienda">
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" asp-controller="Home" asp-action="Index">Inicio</a>
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Inventario" asp-action="Inventario">Inventario</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Configuracion">Configuración</a>
+                        <a class="nav-link" href="#">Link</a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Más Opciones</a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Dropdown
+                        </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-controller="Reportes" asp-action="Index">Reportes</a></li>
-                            <li><a class="dropdown-item" asp-controller="Clientes" asp-action="Index">Clientes</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" asp-controller="Home" asp-action="Configuracion">Configuración</a></li>
+                            <li><a asp-controller="Producto" asp-action="Producto" class="dropdown-item">Añadir productos</a></li>
+                            <li><a asp-action="Proveedores" asp-controller="Proveedor" class="dropdown-item">Proveedor</a></li>
+                            <li><a asp-action="Compras" asp-controller="Compra" class="dropdown-item">Compra</a></li>
+                            <li><a class="dropdown-item" href="#">Something else here</a></li>
                         </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
                     </li>
                 </ul>
 
-                <form class="d-flex me-2">
-                    <input class="form-control me-2 bg-dark text-white border-secondary" type="search" placeholder="Buscar...">
-                    <button class="btn btn-outline-success" type="submit">Buscar</button>
-                </form>
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
 
-                <!-- USUARIO DROPDOWN -->
-                <div class="dropdown">
-                    <a class="btn btn-outline-primary dropdown-toggle" href="#" id="dropdownUsuario" data-bs-toggle="dropdown">
-                        @nombreUsuario
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><a class="dropdown-item" href="#" id="verInformacion">Información</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" asp-controller="Logins" asp-action="CerrarSesion">Cerrar Sesión</a></li>
-                    </ul>
-                </div>
             </div>
         </div>
     </nav>
-
-    <!-- ALERTAS -->
-    <div class="container mt-3">
-        @if (mensajeExito != null)
-        {
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                @mensajeExito
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-        @if (mensajeError != null)
-        {
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                @mensajeError
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        }
-    </div>
-
-    <!-- CARRUSEL -->
-    <div id="carruselTienda" class="carousel slide mt-4" data-bs-ride="carousel">
+    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carruselTienda" data-bs-slide-to="0" class="active"></button>
-            <button type="button" data-bs-target="#carruselTienda" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#carruselTienda" data-bs-slide-to="2"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="~/css/img/ñññ.jpg" class="d-block w-100" alt="Bienvenido">
-                <div class="carousel-caption">
-                    <h5>Bienvenido, @nombreUsuario</h5>
-                    <p>Explora los mejores productos tecnológicos.</p>
+            <div class="carousel-item active" data-bs-interval="10000">
+                <img src="~/css/Imagenes/computador.jpg" class="d-block mx-auto" alt="...">
+                <div class="carousel-caption d-none d-md-block">
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="~/css/img/kk.jpg" class="d-block w-100" alt="Inventario">
-                <div class="carousel-caption">
-                    <h5>Gestión de inventario</h5>
-                    <p>Agrega y administra tu inventario fácilmente.</p>
+            <div class="carousel-item" data-bs-interval="2000">
+                <img src="~/css/Imagenes/computador.jpg" class="d-block  mx-auto" alt="...">
+                <div class="carousel-caption d-none d-md-block">
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="~/css/img/j.jpg" class="d-block w-100" alt="Carrito">
-                <div class="carousel-caption">
-                    <h5>Carrito de Compras</h5>
-                    <p>Compra rápida y segura en un solo lugar.</p>
+            <div class="carousel-item" data-bs-interval="3000">
+                <img src="~/css/Imagenes/computador.jpg" class="d-block  mx-auto" alt="...">
+                <div class="carousel-caption d-none d-md-block">
                 </div>
             </div>
+
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carruselTienda" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carruselTienda" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
         </button>
     </div>
-
-    <!-- INFO PERSONAL -->
-    <div id="infoPersonalContainer" class="container mt-4 d-none">
-        <div id="contenido-infoPersonal" class="bg-dark text-white p-4 rounded shadow"></div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById("verInformacion").addEventListener("click", function (e) {
-            e.preventDefault();
-            fetch('@Url.Action("InformacionPersonal", "Home")')
-                .then(r => r.ok ? r.text() : Promise.reject())
-                .then(html => {
-                    document.getElementById("contenido-infoPersonal").innerHTML = html;
-                    document.getElementById("infoPersonalContainer").classList.remove("d-none");
-                    document.getElementById("infoPersonalContainer").scrollIntoView({ behavior: 'smooth' });
-                })
-                .catch(() => alert("No se pudo cargar la información del usuario."));
-        });
-    </script>
+    <form asp-action="Principal" asp-controller="Home method="post">
+        <button class=" btn btn-primary " asp-action="Principal" asp-controller="Home">
+            regresar
+        </button>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
 </body>
-</html>
+</html>    

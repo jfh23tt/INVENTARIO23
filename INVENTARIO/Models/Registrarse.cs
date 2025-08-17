@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using INVENTARIO.Validations;
+using System.ComponentModel.DataAnnotations;
 
 namespace INVENTARIO.Models
 {
@@ -29,11 +30,19 @@ namespace INVENTARIO.Models
         [Required(ErrorMessage = "La contraseña es obligatoria")]
         [DataType(DataType.Password)]
         public string Contraseña { get; set; } // con tilde
-        [Required(ErrorMessage = "El correo es obligatorio")]
 
+        [Required(ErrorMessage = "La fecha de nacimiento es obligatoria")]
+        [DataType(DataType.Date)]
+        [FechaNacimientoValida] // 👈 Validación personalizada
         public DateTime Fechadenacimiento { get; set; }
-        [Required(ErrorMessage = "El correo es obligatorio")]
 
+
+
+        [Required(ErrorMessage = "El correo es obligatorio")]
         public Tiposexo Tiposexo { get; set; }
+
+        [DataType(DataType.Date)]
+        public DateTime FechaCreacion { get; set; } = DateTime.Now;
+
     }
 }

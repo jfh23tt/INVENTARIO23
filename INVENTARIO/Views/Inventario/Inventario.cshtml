@@ -1,121 +1,141 @@
-﻿@model List<InventarioModel>
+﻿@model IEnumerable<INVENTARIO.Models.ProductoModel>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Inventario</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .table th {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .card {
+            border-radius: 15px;
+        }
+
+        .modal-content {
+            border-radius: 12px;
+        }
+    </style>
 </head>
-<body class="bg-light py-4">
-    <div class="container bg-white shadow rounded p-4">
+<body>
+    <div class="container py-4">
+
+        <!-- Encabezado -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-
-            <h2 class="mb-0">Gestión de Inventario</h2>
-            <div>
-                <a href="/Pdf/pdfInventario" target="_blank" class="btn btn-primary">
-                    <i class="bi bi-arrow-left-circle"></i> Generar PDF
-                </a>
-                <a href="/Home/Menu" class="btn btn-outline-secondary me-2">
-                    <i class="bi bi-arrow-left-circle"></i> Menú
-                </a>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregar">
-                    <i class="bi bi-plus-circle"></i> Añadir Producto
-                </button>
-            </div>
+            <h2 class="fw-bold text-primary">📦 Gestión de Productos</h2>
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+                <i class="fa fa-plus"></i> Nuevo Producto
+            </button>
         </div>
 
-        <!-- Búsqueda -->
-        <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input type="text" class="form-control" placeholder="Buscar producto...">
-        </div>
-
-        <!-- Tabla -->
-        <div class="table-responsive">
-            <table class="table table-hover align-middle text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Proveedor</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
+        <!-- Tabla de productos -->
+        <div class="card shadow">
+            <div class="card-body">
+                <table class="table table-hover align-middle text-center">
+                    <thead>
                         <tr>
-                            <td>@item.Nombre</td>
-                            <td>@item.Categoria</td>
-                            <td>@item.Precio.ToString("C")</td>
-                            <td>@item.Cantidad</td>
-                            <td>@item.Proveedor</td>
-                            <td>
-                                <button class="btn btn-primary btn-sm me-1 btn-editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditar"
-                                        data-id="@item.Id"
-                                        data-nombre="@item.Nombre"
-                                        data-categoria="@item.Categoria"
-                                        data-precio="@item.Precio"
-                                        data-cantidad="@item.Cantidad"
-                                        data-proveedor="@item.Proveedor"
-                                        data-fechaingreso="@item.FechaIngreso.ToString("yyyy-MM-ddTHH:mm")">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
-                                <form asp-action="EliminarProducto" asp-controller="Inventario" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-
-
-
-                            </td>
+                            <th>ID</th>
+                            <th>Imagen</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th>Marca</th>
+                            <th>Precio</th>
+                            <th>Unidades</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>
+                                    <img src="@item.urlimagen" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                </td>
+                                <td>@item.Codigo</td>
+                                <td>@item.Nombre</td>
+                                <td>@item.Marca</td>
+                                <td>$@item.Precio</td>
+                                <td>@item.Unidades</td>
+                                <td>
+                                    <span class="badge @(item.estado == Estado.Activo ? "bg-success" : "bg-danger")">
+                                        @item.estado
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary btn-editar"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditar"
+                                            data-id="@item.Id"
+                                            data-nombre="@item.Nombre"
+                                            data-categoria="@item.Marca"
+                                            data-precio="@item.Precio"
+                                            data-cantidad="@item.Unidades"
+                                            data-proveedor="ProveedorX"
+                                            data-fechaingreso="@DateTime.Now">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="@item.Id">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Modal Agregar Producto -->
     <div class="modal fade" id="modalAgregar" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form id="formAgregar" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Añadir Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">➕ Nuevo Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="Nombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+                <div class="modal-body row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="Nombre" name="Nombre" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="Categoria" class="form-label">Categoría</label>
-                        <input type="text" class="form-control" id="Categoria" name="Categoria" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Código</label>
+                        <input type="text" id="Codigo" name="Codigo" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="Cantidad" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="Cantidad" name="Cantidad" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Marca</label>
+                        <input type="text" id="Marca" name="Marca" class="form-control">
                     </div>
-                    <div class="mb-3">
-                        <label for="Precio" class="form-label">Precio</label>
-                        <input type="number" step="0.01" class="form-control" id="Precio" name="Precio" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Precio</label>
+                        <input type="number" step="0.01" id="Precio" name="Precio" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="Proveedor" class="form-label">Proveedor</label>
-                        <input type="text" class="form-control" id="Proveedor" name="Proveedor" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Unidades</label>
+                        <input type="number" id="Unidades" name="Unidades" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="FechaIngreso" class="form-label">Fecha de Ingreso</label>
-                        <input type="datetime-local" class="form-control" id="FechaIngreso" name="FechaIngreso" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Imagen</label>
+                        <input type="file" id="ImageFile" name="ImageFile" class="form-control" accept="image/*" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="Descripcion" name="Descripcion" class="form-control" rows="3" required></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -126,44 +146,44 @@
         </div>
     </div>
 
-    <!-- Modal Editar Producto -->
+    <!-- Modal Editar Producto (el tuyo mejorado) -->
     <div class="modal fade" id="modalEditar" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-lg">
             <form id="formEditar" class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Editar Producto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title">✏️ Editar Producto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body row g-3">
                     <input type="hidden" id="EditId" name="Id">
-                    <div class="mb-3">
-                        <label for="EditNombre" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="EditNombre" name="Nombre" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" id="EditNombre" name="Nombre" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="EditCategoria" class="form-label">Categoría</label>
-                        <input type="text" class="form-control" id="EditCategoria" name="Categoria" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Categoría</label>
+                        <input type="text" id="EditCategoria" name="Categoria" class="form-control">
                     </div>
-                    <div class="mb-3">
-                        <label for="EditCantidad" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="EditCantidad" name="Cantidad" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" id="EditCantidad" name="Cantidad" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="EditPrecio" class="form-label">Precio</label>
-                        <input type="number" step="0.01" class="form-control" id="EditPrecio" name="Precio" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Precio</label>
+                        <input type="number" step="0.01" id="EditPrecio" name="Precio" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="EditProveedor" class="form-label">Proveedor</label>
-                        <input type="text" class="form-control" id="EditProveedor" name="Proveedor" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Proveedor</label>
+                        <input type="text" id="EditProveedor" name="Proveedor" class="form-control">
                     </div>
-                    <div class="mb-3">
-                        <label for="EditFechaIngreso" class="form-label">Fecha de Ingreso</label>
-                        <input type="datetime-local" class="form-control" id="EditFechaIngreso" name="FechaIngreso" required>
+                    <div class="col-md-6">
+                        <label class="form-label">Fecha de Ingreso</label>
+                        <input type="datetime-local" id="EditFechaIngreso" name="FechaIngreso" class="form-control">
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">Actualizar</button>
-                    <button type="button" class="btn btn-eliminar" data-bs-dismiss="modal">eliminar</button>
+                    <button type="button" class="btn btn-danger" id="btnEliminar">Eliminar</button>
                 </div>
             </form>
         </div>
@@ -172,132 +192,11 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const formAgregar = document.getElementById("formAgregar");
-            const formEditar = document.getElementById("formEditar");
-
-            // Guardar nuevo producto
-            formAgregar.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const data = {
-                    Nombre: document.getElementById("Nombre").value,
-                    Categoria: document.getElementById("Categoria").value,
-                    Cantidad: parseInt(document.getElementById("Cantidad").value),
-                    Precio: parseFloat(document.getElementById("Precio").value),
-                    Proveedor: document.getElementById("Proveedor").value,
-                    FechaIngreso: document.getElementById("FechaIngreso").value
-                };
-
-                try {
-                    const response = await fetch("/Inventario/GuardarProducto", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        alert("Producto guardado correctamente.");
-                        formAgregar.reset();
-                        bootstrap.Modal.getInstance(document.getElementById("modalAgregar")).hide();
-                        location.reload();
-                    } else {
-                        alert("Error al guardar el producto.");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("Error inesperado.");
-                }
-            });
-
-            // Cargar datos en el modal de edición
-            document.querySelectorAll(".btn-editar").forEach(btn => {
-                btn.addEventListener("click", () => {
-                    document.getElementById("EditId").value = btn.dataset.id;
-                    document.getElementById("EditNombre").value = btn.dataset.nombre;
-                    document.getElementById("EditCategoria").value = btn.dataset.categoria;
-                    document.getElementById("EditPrecio").value = btn.dataset.precio;
-                    document.getElementById("EditCantidad").value = btn.dataset.cantidad;
-                    document.getElementById("EditProveedor").value = btn.dataset.proveedor;
-                    document.getElementById("EditFechaIngreso").value = btn.dataset.fechaingreso;
-                });
-            });
-
-            // Editar producto
-            formEditar.addEventListener("submit", async (e) => {
-                e.preventDefault();
-
-                const data = {
-                    Id: parseInt(document.getElementById("EditId").value),
-                    Nombre: document.getElementById("EditNombre").value,
-                    Categoria: document.getElementById("EditCategoria").value,
-                    Cantidad: parseInt(document.getElementById("EditCantidad").value),
-                    Precio: parseFloat(document.getElementById("EditPrecio").value),
-                    Proveedor: document.getElementById("EditProveedor").value,
-                    FechaIngreso: document.getElementById("EditFechaIngreso").value
-                };
-
-                try {
-                    const response = await fetch("/Inventario/Edita", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(data)
-                    });
-
-                    if (response.ok) {
-                        alert("Producto actualizado correctamente.");
-                        bootstrap.Modal.getInstance(document.getElementById("modalEditar")).hide();
-                        location.reload();
-                    } else {
-                        alert("Error al actualizar el producto.");
-                    }
-                } catch (err) {
-                    console.error(err);
-                    alert("Error inesperado.");
-                }
-            });
-
-
-
-
-
-        });
+   
+        
+     
+    <script src="~/js/jas.js">
+        // Aquí puedes pegar el mismo script JS que ya tienes
     </script>
-    <script>
-          <script>
-        document.querySelectorAll(".btn-eliminar").forEach(btn => {
-            btn.addEventListener("click", async () => {
-                const id = btn.dataset.id;
-
-                if (confirm("¿Estás seguro de que deseas eliminar este producto?")) {
-                    try {
-                        const response = await fetch(`/Inventario/EliminarProducto`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({ id: parseInt(id) })
-                        });
-
-                        if (response.ok) {
-                            alert("Producto eliminado correctamente.");
-                            location.reload();
-                        } else {
-                            alert("Error al eliminar el producto.");
-                        }
-                    } catch (err) {
-                        console.error(err);
-                        alert("Error inesperado al eliminar.");
-                    }
-                }
-            });
-        });
-    </script>
-
-    </script>
-
-
 </body>
 </html>
